@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _, tools
 
-class variablesflu(models.Model):
-    _name = "variables.flu"
-    
+class user_odoo_to_flutter(models.Model):
+    _name = "user_variables_to_flutter"
+
+    id_client= fields.Many2one(comodel_name='res.partner', string='Cliente')
