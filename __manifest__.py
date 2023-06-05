@@ -6,4 +6,5 @@
     'data':[
         'views/menu.xml'
     ],
+    'aplication': True
 }

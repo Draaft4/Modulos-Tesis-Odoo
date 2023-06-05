@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-     <menuitem id="menu_loyalty_service_root"
-        name="Service"
 
-        sequence="0"
-               
-       />
+    <record model="ir.ui.view" id="tokens.list">
+      <field name="name">tokens list</field>
+      <field name="model">user.variables</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="id_client"/>
+        </tree>
+      </field>
+    </record>
+
 </odoo>
