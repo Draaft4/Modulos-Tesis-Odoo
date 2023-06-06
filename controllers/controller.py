@@ -1,4 +1,6 @@
 from odoo import http
+from odoo.http import request
+import json
 
 class getClientData(http.Controller):
 
@@ -13,4 +15,5 @@ class getClientData(http.Controller):
 
             })
 
-        return print(str(costumerList))
+        #return (str(costumerList))
+        return request.make_response(json.dumps(costumerList), headers=[('Content-Type', 'application/json')])

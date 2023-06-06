@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
+    <!--
     <record model="ir.ui.view" id="tokens.list">
       <field name="name">tokens list</field>
       <field name="model">user.variables</field>
@@ -11,5 +11,5 @@
         </tree>
       </field>
     </record>
-
+-->
 </odoo>
