@@ -1,5 +1,7 @@
 from odoo import http
 from odoo.http import request
+from odoo import models,fields
+
 import json
 
 class getClientData(http.Controller):
@@ -35,16 +37,13 @@ class getClientData(http.Controller):
 
     @http.route('/api/login', auth='public',website=False, crf=False, type='http', methods=['POST'])
     def sendLogin(self,**post_data):
+
+        identific = post_data.get('vat')
+        name=post_data.get('name')
         email=post_data.get('email')
-        identificacion=post_data.get('cedula')
-        partner= request.env['res.partner'].sudo.browse()
-        parntermail=partner.email
-
-
-        #if email == parntermail:
-
-
-
+        telefono=post_data.get('phone')
+        nuevoUsuario=[identific,name,email,telefono]
+        partner= request.env['res.partner'].create(nuevoUsuario)
 
 
         return True
