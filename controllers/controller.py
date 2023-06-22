@@ -40,6 +40,7 @@ class getClientData(http.Controller):
         partner= request.env['res.partner'].sudo.browse()
         parntermail=partner.email
 
+
         #if email == parntermail:
 
 
