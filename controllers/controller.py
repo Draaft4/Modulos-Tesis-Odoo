@@ -4,6 +4,10 @@ from odoo import models,fields
 
 import json
 
+"""class resPartner(models.model):
+    _inherit='res.partner'
+    listTokkens= fields.One2many
+    """
 class getClientData(http.Controller):
 
     @http.route('/api/loyaltyData', auth='public', website=False, crf=False, type='http', methods=['GET'])
@@ -42,7 +46,8 @@ class getClientData(http.Controller):
         name=post_data.get('name')
         email=post_data.get('email')
         telefono=post_data.get('phone')
-        nuevoUsuario=[identific,name,email,telefono]
+        tokken=post_data.get('tokken')
+        nuevoUsuario=[identific,name,email,telefono,tokken]
         partner= request.env['res.partner'].create(nuevoUsuario)
 
 
