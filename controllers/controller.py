@@ -99,7 +99,6 @@ class getClientData(http.Controller):
             expiration_date = coupon.expiration_date
             if expiration_date:
                 expiration_date = expiration_date.strftime('%Y-%m-%d')
-                print(expiration_date)
                 coupon_data.append({
                 'code': coupon.code,
                 'program_name': coupon.program_id.name,
