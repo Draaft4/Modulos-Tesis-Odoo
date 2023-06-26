@@ -29,8 +29,8 @@
     'auto_install': False,
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
         'views/firebase_notification_views.xml',
+        'views/res_partner_inherit.xml',
         'security/ir.model.access.csv',
     ],
 

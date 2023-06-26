@@ -3,7 +3,7 @@ from firebase_admin import credentials, messaging
 from odoo import models, fields, api
 from odoo.http import request
 
-class FirebaseNotification(models.Model):
+class FirebaseNotificationIndividual(models.Model):
     _name = 'firebase.notification'
     title = fields.Char(string='Titulo', required=True)
     message = fields.Text(string='Mensaje', required=True)
@@ -36,8 +36,37 @@ class FirebaseNotification(models.Model):
                 )
                 response = messaging.send(message)
                 print('Successfully sent message:', response)
-        return True
 
+
+class FirebaseNotificationGrupal(models.Model):
+
+    _name="firebase.notification.grupal"
+    title = fields.Char(string='Titulo', required=True)
+    message = fields.Text(string='Mensaje', required=True)
+    group_id = fields.Many2one("mass.notification")
+
+    def name_get(self):
+        result = []
+        for rec in self:
+            result.append((rec.id, '%s%s' % ('Notificacion ',rec.id)))
+        return result
+
+    def send_notification(self):
+        for record in self:
+            partner_records = self.env['res.partner'].sudo().search([('group_mass_notification', '=', record.group_id.id)])
+            for partner in partner_records:
+                registration_tokens = partner.token_ids
+                for tokens in registration_tokens:
+                    # print(tokens.token)
+                    message = messaging.Message(
+                        notification=messaging.Notification(
+                            title=record.title,
+                            body=record.message,
+                        ),
+                        token=tokens.token,
+                    )
+                    response = messaging.send(message)
+                    print('Successfully sent message:', response)
 
 
 class tokenListPartner(models.Model):
@@ -48,11 +77,32 @@ class tokenListPartner(models.Model):
 
     token = fields.Char()
 
+    def name_get(self):
+        result = []
+        for rec in self:
+            result.append((rec.id, '%s%s' % ('Token ',rec.id)))
+        return result
+
+
+class massNotificationType(models.Model):
+
+    _name="mass.notification"
+
+    group_name = fields.Char(string="Grupo Notificaciones")
+
+    def name_get(self):
+        result = []
+        for rec in self:
+            result.append((rec.id, '%s' % (rec.group_name)))
+        return result
+
 class partnerInherit(models.Model):
 
     _inherit = "res.partner"
 
     token_ids = fields.One2many("token.partner","partner_id")
+
+    group_mass_notification = fields.Many2one("mass.notification")
 
 
 
