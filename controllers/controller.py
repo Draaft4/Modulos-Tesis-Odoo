@@ -151,3 +151,32 @@ class getClientData(http.Controller):
                 'error': str(e)
             }
             return http.request.make_response(json.dumps(error),headers=[('Content-Type', 'application/json')])
+
+    @http.route('/api/registerToken', type='http', auth='public', methods=['POST'], csrf=False)
+    def registerToken(self, **post_data):
+        try:
+            data = json.loads(http.request.httprequest.data)
+            print(data)
+            partner_id = data.get('partner_id')
+            token = data.get('token')
+            # Validar existencia del partner
+            print('Validar existencia del partner')
+            partner = request.env['res.partner'].sudo().browse(int(partner_id))
+            if not partner:
+                raise ValueError('Partner not found')
+            # Crear o actualizar token.partner
+            print('Crear o actualizar token.partner')
+            token_record = request.env['token.partner'].sudo().search([('partner_id', '=', partner.id)], limit=1)
+            request.env['token.partner'].sudo().create({'partner_id': partner.id, 'token': token})
+
+            result = {
+                'success': True,
+                'message': 'Token registered successfully'
+            }
+            return request.make_response(json.dumps(result), headers=[('Content-Type', 'application/json')])
+        except Exception as e:
+            error = {
+                'success': False,
+                'error': str(e)
+            }
+            return request.make_response(json.dumps(error), headers=[('Content-Type', 'application/json')])
