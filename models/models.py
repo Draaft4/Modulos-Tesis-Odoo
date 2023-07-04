@@ -77,6 +77,8 @@ class tokenListPartner(models.Model):
 
     token = fields.Char()
 
+    device_name = fields.Char(string="Nombre del dispositivo")
+
     def name_get(self):
         result = []
         for rec in self:

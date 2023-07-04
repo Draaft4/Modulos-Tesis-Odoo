@@ -74,6 +74,7 @@
                 <field name="id" />
                 <field name="partner_id" />
                 <field name="token" />
+                <field name="device_name"/>
             </tree>
         </field>
     </record>
@@ -89,6 +90,9 @@
                     <div></div>
                     <label for="token" />
                     <field name="token" />
+                    <div></div>
+                    <label for="device_name"/>
+                    <field name="device_name"/>
                 </sheet>
             </form>
         </field>

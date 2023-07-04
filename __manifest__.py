@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','contacts'],  # Dependencias del módulo
+    'depends': ['base','contacts','loyalty','point_of_sale'],  # Dependencias del módulo
     'external_dependencies': {
             'python': ['firebase_admin'],
         },
