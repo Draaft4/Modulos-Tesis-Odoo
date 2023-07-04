@@ -116,9 +116,7 @@ class getClientData(http.Controller):
                 'fallo': False,
                 'error': str(e)
             }
-            return http.request.make_response(json.dumps(error),
-                                              headers=[('Content-Type', 'application/json')]) @ http.route(
-                '/api/newClient', type='http', auth='public', methods=['POST'], csrf=False)
+            return http.request.make_response(json.dumps(error), headers=[('Content-Type', 'application/json')])
 
     @http.route('/api/updateClient', type='http', auth='public', methods=['POST'], csrf=False)
     def updateClient(self, **post_data):
@@ -156,22 +154,64 @@ class getClientData(http.Controller):
     def registerToken(self, **post_data):
         try:
             data = json.loads(http.request.httprequest.data)
-            print(data)
             partner_id = data.get('partner_id')
             token = data.get('token')
-            # Validar existencia del partner
-            print('Validar existencia del partner')
+            device_name = data.get('device_name')
             partner = request.env['res.partner'].sudo().browse(int(partner_id))
             if not partner:
                 raise ValueError('Partner not found')
-            # Crear o actualizar token.partner
-            print('Crear o actualizar token.partner')
             token_record = request.env['token.partner'].sudo().search([('partner_id', '=', partner.id)], limit=1)
-            request.env['token.partner'].sudo().create({'partner_id': partner.id, 'token': token})
-
+            request.env['token.partner'].sudo().create({'partner_id': partner.id, 'token': token,'device_name':device_name})
             result = {
                 'success': True,
                 'message': 'Token registered successfully'
+            }
+            return request.make_response(json.dumps(result), headers=[('Content-Type', 'application/json')])
+        except Exception as e:
+            error = {
+                'success': False,
+                'error': str(e)
+            }
+            return request.make_response(json.dumps(error), headers=[('Content-Type', 'application/json')])
+
+    @http.route('/api/getContactTokens', type='http', auth='public', methods=['POST'], csrf=False)
+    def getContactTokens(self, **post_data):
+        try:
+            data =  json.loads(http.request.httprequest.data)
+            partner_id = data.get('partner_id')
+            # Validar existencia del partner
+            print("Validar existencia del partner")
+            partner = request.env['res.partner'].sudo().browse(int(partner_id))
+            if not partner:
+                raise ValueError('Partner not found')
+            # Obtener tokens del contacto"
+            print("Obtener tokens del contacto")
+            token_records = request.env['token.partner'].sudo().search([('partner_id', '=', partner.id)])
+            tokens = []
+            for token_record in token_records:
+                tokens.append({'id':token_record.id,'device_name':token_record.device_name,'token':token_record.token})
+            return request.make_response(json.dumps(tokens), headers=[('Content-Type', 'application/json')])
+        except Exception as e:
+            error = {
+                'success': False,
+                'error': str(e)
+            }
+            return request.make_response(json.dumps(error), headers=[('Content-Type', 'application/json')])
+
+    @http.route('/api/deleteToken', type='http', auth='public', methods=['POST'], csrf=False)
+    def deleteToken(self, **post_data):
+        try:
+            data = json.loads(http.request.httprequest.data)
+            token_id = data.get('token_id')
+            # Validar existencia del registro de token
+            token_record = request.env['token.partner'].sudo().browse(int(token_id))
+            if not token_record:
+                raise ValueError('Token record not found')
+            # Eliminar el registro de token
+            token_record.unlink()
+            result = {
+                'success': True,
+                'message': 'Token deleted successfully'
             }
             return request.make_response(json.dumps(result), headers=[('Content-Type', 'application/json')])
         except Exception as e:
