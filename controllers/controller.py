@@ -89,6 +89,7 @@ class getClientData(http.Controller):
 
     @http.route('/api/newClient', type='http', auth='public', methods=['POST'], csrf=False)
     def newClient(self, **post_data):
+        print(http.request.httprequest.data)
         try:
             data = json.loads(http.request.httprequest.data)
             name = data.get('name')
@@ -226,3 +227,32 @@ class getClientData(http.Controller):
                 'error': str(e)
             }
             return request.make_response(json.dumps(error), headers=[('Content-Type', 'application/json')])
+
+    @http.route('/api/checkToken', type='http', auth='public', methods=['POST'], csrf=False)
+    def checkToken(self, **post_data):
+        try:
+            data = json.loads(http.request.httprequest.data)
+            partner_id = data.get('partner_id')
+            token = data.get('token')
+            partner = request.env['res.partner'].sudo().browse(int(partner_id))
+            if not partner:
+                raise ValueError('Partner not found')
+
+            # Verificar si el token está registrado
+            token_record = request.env['token.partner'].sudo().search(
+                [('partner_id', '=', partner.id), ('token', '=', token)], limit=1)
+            if not token_record:
+                raise ValueError('Token not found')
+
+            result = {
+                'success': True,
+                'message': 'Token is registered'
+            }
+            return request.make_response(json.dumps(result), headers=[('Content-Type', 'application/json')])
+        except Exception as e:
+            error = {
+                'success': False,
+                'error': str(e)
+            }
+            return request.make_response(json.dumps(error), headers=[('Content-Type', 'application/json')])
+
