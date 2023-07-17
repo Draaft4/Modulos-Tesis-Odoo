@@ -1,10 +1,22 @@
 from odoo import http
-from odoo.http import request
+from odoo.http import request, Response
 from datetime import datetime
 import json
 
 
 class getClientData(http.Controller):
+
+    @http.route('/api/loyalty_rules', type='http', auth='public', methods=['GET'], csrf=False)
+    def get_loyalty_rules(self, **kwargs):
+        try:
+            rules = request.env['loyalty.rule'].sudo().search_read([('reward_point_mode', '=', 'money')], fields=['minimum_qty', 'minimum_amount', 'reward_point_amount'])
+            return Response(json.dumps(rules), content_type='application/json')
+        except Exception as e:
+            error = {
+                'success': False,
+                'error': str(e)
+            }
+            return Response(json.dumps(error), content_type='application/json')
 
     @http.route('/api/loyaltyData', auth='public', website=False, crf=False, type='http', methods=['GET'])
     def getLoyalty(self, **kw):
@@ -56,16 +68,21 @@ class getClientData(http.Controller):
     def getCupons(self, **kwargs):
         rewards = []
         loyalty_rewards = http.request.env['loyalty.reward'].sudo().search([])
-        program_id = 6
-        
-        for reward in loyalty_rewards.filtered(lambda r: r.program_id.id == program_id):
-            img =  reward.reward_product_id.image_128
+
+        for reward in loyalty_rewards:
+            img = reward.reward_product_id.image_128
+            if img:
+                rewards.append({
+                    'description': reward.description,
+                    'required_points': reward.required_points,
+                    'reward_type': reward.reward_type,
+                    'base64': img.decode('utf-8')
+                })
+        else:
             rewards.append({
                 'description': reward.description,
                 'required_points': reward.required_points,
                 'reward_type': reward.reward_type,
-                'quantity':reward.reward_product_qty,
-                'base64':img.decode('utf-8')
             })
         return http.request.make_response(json.dumps(rewards), headers=[('Content-Type', 'application/json')])
 
@@ -255,4 +272,3 @@ class getClientData(http.Controller):
                 'error': str(e)
             }
             return request.make_response(json.dumps(error), headers=[('Content-Type', 'application/json')])
-
