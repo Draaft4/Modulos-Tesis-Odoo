@@ -20,7 +20,7 @@ class CustomLoyalty(models.Model):
                     message = messaging.Message(
                     notification=messaging.Notification(
                         title="Has Ganado Puntos!",
-                        body=f"Usted ha ganado ${points}, gracias por su compra.",
+                        body=f"Usted ha acumulado ${points}, gracias por su compra.",
                     ),
                     token=token.token,
                 )
